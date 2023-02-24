@@ -1,4 +1,4 @@
-import Spell from "../spell";
+const Spell = require("../Spell");
 
 class Reparo extends Spell {
   constructor() {
@@ -10,4 +10,4 @@ class Reparo extends Spell {
   }
 }
 
-export default Reparo;
+module.exports = Reparo;

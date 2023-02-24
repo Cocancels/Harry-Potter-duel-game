@@ -124,7 +124,7 @@ io.on("connection", (socket) => {
     io.to(actualRoom.id).emit("gameStarted", game, actualRoom);
   });
 
-  // Update game
+  // Cast spell
   socket.on("castSpell", (actualRoom, character, target, castedSpell) => {
     const updatedRoom = rooms.find((room) => room.id === actualRoom.id);
     const thisSpell = spells.find((spell) => spell.id === castedSpell.id);
@@ -134,9 +134,36 @@ io.on("connection", (socket) => {
 
     updatedRoom.game.characters.map((actualCharacter) => {
       if (actualCharacter.id === character.id) {
-        actualCharacter.castSpell(new thisSpell(), targetCharacter);
+        socket.action = actualCharacter.castSpell.bind(
+          actualCharacter,
+          new thisSpell(),
+          targetCharacter
+        );
       }
     });
+
+    const room = io.sockets.adapter.rooms.get(actualRoom.id);
+
+    let canExecute = true;
+
+    for (const socketId of room) {
+      const socket = io.sockets.sockets.get(socketId);
+      if (!socket.action) {
+        canExecute = false;
+        break;
+      }
+    }
+
+    if (canExecute) {
+      for (const socketId of room) {
+        const socket = io.sockets.sockets.get(socketId);
+        socket.action();
+      }
+
+      socket.action = null;
+    } else {
+      return;
+    }
 
     const updatedGame = updatedRoom.game;
 

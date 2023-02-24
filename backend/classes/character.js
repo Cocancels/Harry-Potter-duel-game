@@ -4,7 +4,7 @@ class Character {
     firstname,
     lastname,
     maxHealth = 100,
-    maxMana = 0,
+    maxMana = 100,
     attack = 10,
     spells,
     nickname
@@ -17,6 +17,8 @@ class Character {
     this.health = maxHealth;
     this.mana = maxMana;
     this.attack = attack;
+    this.defense = 0;
+    this.speed = 0;
     this.spells = spells;
     this.status = [];
     this.isProtected = 0;
