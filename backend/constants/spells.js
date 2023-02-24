@@ -6,12 +6,12 @@ const Protego = require("../classes/Spells/Protego");
 const Reparo = require("../classes/Spells/Reparo");
 
 const spells = [
-  Attackus,
-  Incendio,
-  Reparo,
-  Protego,
-  PetrificusTotalus,
-  Avadakedavra,
+  new Attackus(),
+  new Incendio(),
+  new Reparo(),
+  new Protego(),
+  new PetrificusTotalus(),
+  new Avadakedavra(),
 ];
 
 module.exports = spells;

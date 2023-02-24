@@ -34,7 +34,7 @@ const createCharacterFromUser = (user) => {
     user.character.maxHealth,
     user.character.maxMana,
     user.character.attack,
-    [new spells[0]()],
+    spells,
     user.nickname
   );
 
@@ -49,7 +49,7 @@ const createCharacter = (character) => {
     character.maxHealth,
     character.maxMana,
     character.attack,
-    [new spells[0]()],
+    spells,
     character.nickname
   );
 
@@ -127,18 +127,23 @@ io.on("connection", (socket) => {
   // Cast spell
   socket.on("castSpell", (actualRoom, character, target, castedSpell) => {
     const updatedRoom = rooms.find((room) => room.id === actualRoom.id);
-    const thisSpell = spells.find((spell) => spell.id === castedSpell.id);
+    const thisSpell = spells.find((spell) => spell.id === castedSpell);
+    const casterCharacter = updatedRoom.game.characters.find(
+      (character) => character.id === character.id
+    );
     const targetCharacter = updatedRoom.game.characters.find(
       (character) => character.id === target.id
     );
+    const game = updatedRoom.game;
 
-    updatedRoom.game.characters.map((actualCharacter) => {
+    game.characters.map((actualCharacter) => {
       if (actualCharacter.id === character.id) {
         socket.action = actualCharacter.castSpell.bind(
           actualCharacter,
-          new thisSpell(),
+          thisSpell,
           targetCharacter
         );
+        socket.character = casterCharacter;
       }
     });
 
@@ -157,15 +162,18 @@ io.on("connection", (socket) => {
     if (canExecute) {
       for (const socketId of room) {
         const socket = io.sockets.sockets.get(socketId);
-        socket.action();
-      }
 
-      socket.action = null;
+        game.handleUserTurn(socket.character, socket.action());
+        socket.action = null;
+      }
+      game.endTurn();
     } else {
       return;
     }
 
     const updatedGame = updatedRoom.game;
+
+    updatedRoom.characters = updatedGame.characters;
 
     io.to(actualRoom.id).emit("gameUpdated", updatedGame, updatedRoom);
   });

@@ -2,15 +2,11 @@ class Game {
   constructor(characters) {
     this.characters = characters;
     this.currentTurn = 0;
-    this.currentPlayer = null;
-    this.opponentPlayer = null;
     this.isStarted = false;
   }
 
   endTurn() {
     this.currentTurn = this.currentTurn + 1;
-    this.currentPlayer = this.opponentPlayer;
-    this.opponentPlayer = this.getOpponentPlayer();
   }
 
   endGame() {
@@ -31,50 +27,42 @@ class Game {
     return aliveCharacters < 2;
   }
 
-  handleProtected() {
-    if (this.currentPlayer.isProtected > 0) {
-      this.currentPlayer.setProtected(this.currentPlayer.isProtected - 1);
+  handleProtected(character) {
+    if (character.isProtected > 0) {
+      character.setProtected(character.isProtected - 1);
       console.log(
-        `${this.currentPlayer.firstName} ${this.currentPlayer.lastName} loses 1 turn of protection, ${this.currentPlayer.isProtected} left`
+        `${character.firstname} ${character.lastname} loses 1 turn of protection, ${character.isProtected} left`
       );
 
-      if (this.currentPlayer.isProtected === 0) {
-        this.currentPlayer.status = this.currentPlayer.status.filter(
+      if (character.isProtected === 0) {
+        character.status = character.status.filter(
           (status) => status !== "protected"
         );
       }
     }
   }
 
-  handleStun() {
-    if (this.currentPlayer.isStunned > 0) {
-      this.currentPlayer.setStunned(this.currentPlayer.isStunned - 1);
+  handleStun(character) {
+    if (character.isStunned > 0) {
+      character.setStunned(character.isStunned - 1);
       console.log(
-        `${this.currentPlayer.firstName} ${this.currentPlayer.lastName} loses 1 turn of stun, ${this.currentPlayer.isStunned} left`
+        `${character.firstname} ${character.lastname} loses 1 turn of stun, ${character.isStunned} left`
       );
 
-      if (this.currentPlayer.isStunned === 0) {
-        this.currentPlayer.status = this.currentPlayer.status.filter(
+      if (character.isStunned === 0) {
+        character.status = character.status.filter(
           (status) => status !== "stunned"
         );
       }
     }
   }
 
-  handleUserTurn(spell, target) {
-    if (this.currentPlayer.isAlive()) {
-      this.handleProtected();
-      this.currentPlayer.castSpell(spell, target);
-
-      this.handleStun();
-      this.endTurn();
+  handleUserTurn(character, action) {
+    if (character.isAlive()) {
+      this.handleProtected(character);
+      action;
+      this.handleStun(character);
     }
-  }
-
-  getOpponentPlayer() {
-    return this.characters.find(
-      (character) => character.id !== this.currentPlayer.id
-    );
   }
 
   getRandomCharacter() {
@@ -82,8 +70,6 @@ class Game {
   }
 
   startGame() {
-    this.currentPlayer = this.getRandomCharacter();
-    this.opponentPlayer = this.getOpponentPlayer();
     this.isStarted = true;
   }
 
