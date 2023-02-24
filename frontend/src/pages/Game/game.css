@@ -1,0 +1,51 @@
+.game-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.game-characters-container {
+  display: flex;
+  justify-content: space-around;
+}
+
+.start-game {
+  background-color: rgb(31, 165, 31);
+  transition: 0.3s;
+}
+
+.start-game:hover {
+  background-color: rgba(31, 165, 31, 0.637);
+}
+
+.leave-room {
+  background-color: rgb(165, 31, 31);
+  transition: 0.3s;
+}
+
+.leave-room:hover {
+  background-color: rgba(165, 31, 31, 0.637);
+}
+
+.results-modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.results-modal-content {
+  width: 50%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  color: black;
+}

@@ -1,0 +1,51 @@
+.background {
+  height: 100vh;
+  position: absolute;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  z-index: -10;
+}
+
+.room-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.room-button {
+  background-color: rgb(244, 250, 205);
+  color: black !important;
+}
+
+.room-button:hover {
+  background-color: black;
+  color: wheat;
+}
+
+.room-button h2 {
+  font-size: 24px;
+}
+
+.create-room-button {
+  background-color: rgb(24, 24, 24);
+  border-radius: 12px;
+}
+
+.create-room-button:hover {
+  background-color: rgb(47, 47, 47);
+}
+
+.room-creation-container {
+  display: flex;
+  align-items: center;
+}
+
+.room-creation-container input {
+  border-radius: 12px;
+  border: none;
+  padding: 10px;
+  font-size: 18px;
+  height: 50px;
+}

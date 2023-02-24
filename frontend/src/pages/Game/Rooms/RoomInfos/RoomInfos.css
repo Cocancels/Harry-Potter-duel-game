@@ -1,0 +1,65 @@
+.room-infos-container {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid black;
+}
+
+.room-infos-modal {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+
+.room-infos-modal-content {
+  width: 50%;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  color: black;
+}
+
+.room-infos-modal-header h2 {
+  font-size: 24px;
+}
+
+.room-infos-modal-close {
+  margin-left: auto;
+  margin-right: 10px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: 0.4s;
+}
+
+.room-infos-roomId {
+  font-size: 24px;
+}
+
+.room-infos-modal-close:hover {
+  scale: 0.9;
+}
+
+.room-infos {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.room-infos-icon {
+  transition: 0.4s;
+}
+
+.room-infos-icon:hover {
+  scale: 0.9;
+  cursor: pointer;
+}

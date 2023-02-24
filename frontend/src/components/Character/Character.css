@@ -1,0 +1,63 @@
+.character-container {
+  width: -webkit-fill-available;
+  text-align: left;
+}
+
+.character {
+  padding: 0px 20px;
+}
+
+.character-name {
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.character-name-current {
+  background-color: rgb(145, 208, 140);
+}
+.character-name-not-current {
+  background-color: rgb(208, 140, 140);
+}
+
+.character-image-container {
+  background-image: url("/public/images/wall-dungeon.jpg");
+  background-position: bottom;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-size: cover;
+  height: 300px;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.character-image {
+  height: 75%;
+}
+
+.flipped {
+  transform: scaleX(-1);
+}
+
+.character-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 150px;
+  padding: 10px;
+}
+
+.character-info-bar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  align-items: flex-end;
+}
+
+.character-info p {
+  margin: 0;
+}

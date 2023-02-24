@@ -1,0 +1,57 @@
+@import url("https://fonts.googleapis.com/css2?family=DotGothic16&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DotGothic16&display=swap");
+
+li {
+  list-style: none;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+}
+
+input {
+  outline: none;
+}
+
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.container-inscription {
+  padding: 40px 10%;
+  transition-duration: 1s;
+}
+
+.container-color-undefined {
+  background-color: rgb(26, 63, 114);
+}
+
+.container-color-serp {
+  background-color: #1a472a !important;
+}
+
+.container-color-grif {
+  background-color: #740001 !important;
+}
+
+.container-color-serd {
+  background-color: #0e1a40 !important;
+}
+
+.container-color-pouf {
+  background-color: #ecb939 !important;
+}
+
+.App {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #19191a;
+}
+
+body {
+  font-family: "DotGothic16", sans-serif !important ;
+  color: #fff !important;
+}

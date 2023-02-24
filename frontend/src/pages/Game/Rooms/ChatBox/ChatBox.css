@@ -1,0 +1,46 @@
+.chat-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.chat-box h3 {
+  text-align: center;
+  font-size: bold;
+}
+
+.chat-box-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.chat-box-message-input-container {
+  display: flex;
+  flex-direction: row;
+  padding: 1px;
+}
+
+.chat-box-message-input-container input {
+  /* Tell the input to use all the available space */
+  flex-grow: 2;
+  /* And hide the input's outline, so the form looks like the outline */
+  border: none;
+}
+
+.chat-box-message-input-container button {
+  border: none;
+  outline: none;
+  padding: 4px 20px;
+  background-color: #2f9133;
+  color: white;
+}
+
+.chat-box-message-input-container button:hover {
+  background-color: #35ac39;
+}

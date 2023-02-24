@@ -1,0 +1,20 @@
+.chat-box-message {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  color: black;
+  width: fit-content;
+  max-width: 80%;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 10px;
+}
+
+.current-user {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  background-color: rgb(183, 185, 62);
+  align-self: flex-end;
+}
