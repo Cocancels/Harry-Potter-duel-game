@@ -61,7 +61,7 @@ export const WaitingRoom = (props: WaitingRoomProps) => {
   };
 
   const startGame = () => {
-    setCountdown(3);
+    setCountdown(1);
   };
 
   return (

@@ -1,16 +1,10 @@
 class Game {
-  constructor(
-    characters,
-    currentTurn,
-    currentPlayer,
-    opponentPlayer,
-    isStarted
-  ) {
+  constructor(characters) {
     this.characters = characters;
-    this.currentTurn = currentTurn;
-    this.currentPlayer = currentPlayer;
-    this.opponentPlayer = opponentPlayer;
-    this.isStarted = isStarted;
+    this.currentTurn = 0;
+    this.currentPlayer = null;
+    this.opponentPlayer = null;
+    this.isStarted = false;
   }
 
   endTurn() {

@@ -11,10 +11,11 @@ interface SpellSelectionProps {
   actualUser: User | undefined;
   actualRoom: Room | undefined;
   isGameStarted: boolean;
-  isChoosingTarget: boolean;
-  chooseTarget: boolean;
-  handleTargetSelection: (character: Character) => void;
-  handleChoseSpell: (spellId: number) => void;
+  socket: any;
+  // isChoosingTarget: boolean;
+  // chooseTarget: boolean;
+  // handleTargetSelection: (character: Character) => void;
+  // handleChoseSpell: (spellId: number) => void;
 }
 
 export const SpellSelection = (props: SpellSelectionProps) => {
@@ -24,10 +25,11 @@ export const SpellSelection = (props: SpellSelectionProps) => {
     actualUser,
     actualRoom,
     isGameStarted,
-    isChoosingTarget,
-    chooseTarget,
-    handleTargetSelection,
-    handleChoseSpell,
+    socket,
+    // isChoosingTarget,
+    // chooseTarget,
+    // handleTargetSelection,
+    // handleChoseSpell,
   } = props;
 
   const isActualUser = (character: Character) => {
@@ -36,52 +38,63 @@ export const SpellSelection = (props: SpellSelectionProps) => {
     );
   };
 
+  const handleChoseSpell = (spellId: number, target: Character) => {
+    console.log(actualRoom);
+    socket.emit("castSpell", actualRoom, currentPlayer, target, spellId);
+  };
+
   return (
     <div className="spell-target-selection-container">
-      {!isChoosingTarget ? (
-        <>
-          <div className="game-spells-container">
-            {isGameStarted &&
-              currentPlayer &&
-              characters.map((character: Character) => {
-                if (character.id === currentPlayer.id)
-                  return (
-                    <div key={character.id}>
-                      {isActualUser(character) ? (
-                        <div className="character-turn">
-                          <h2>{character.firstname}, c'est à toi !</h2>
-                        </div>
-                      ) : (
-                        <div className="character-turn">
-                          <h2>
-                            {character.firstname} est en train de jouer,
-                            patiente un peu !
-                          </h2>
-                        </div>
-                      )}
-
-                      <div key={character.id} className="game-spells">
-                        {character.spells.map((spell: Spell) => {
-                          return (
-                            <Button
-                              key={spell.id}
-                              onClick={() => {
-                                handleChoseSpell(spell.id);
-                              }}
-                              className={`${spell.type}-button`}
-                              label={spell.name}
-                              spell={spell}
-                              disabled={!isActualUser(character)}
-                            />
-                          );
-                        })}
+      {/* {!isChoosingTarget ? ( */}
+      <>
+        <div className="game-spells-container">
+          {isGameStarted &&
+            currentPlayer &&
+            characters.map((character: Character) => {
+              if (character.id === currentPlayer.id)
+                return (
+                  <div key={character.id}>
+                    {isActualUser(character) ? (
+                      <div className="character-turn">
+                        <h2>{character.firstname}, c'est à toi !</h2>
                       </div>
+                    ) : (
+                      <div className="character-turn">
+                        <h2>
+                          {character.firstname} est en train de jouer, patiente
+                          un peu !
+                        </h2>
+                      </div>
+                    )}
+
+                    <div key={character.id} className="game-spells">
+                      {character.spells.map((spell: Spell) => {
+                        return (
+                          <Button
+                            key={spell.id}
+                            onClick={() =>
+                              handleChoseSpell(
+                                spell.id,
+                                characters.find(
+                                  (character) =>
+                                    character.id !== currentPlayer?.id
+                                ) as Character
+                              )
+                            }
+                            className={`${spell.type}-button`}
+                            label={spell.name}
+                            spell={spell}
+                            disabled={!isActualUser(character)}
+                          />
+                        );
+                      })}
                     </div>
-                  );
-              })}
-          </div>
-        </>
-      ) : (
+                  </div>
+                );
+            })}
+        </div>
+      </>
+      {/* ) : (
         chooseTarget && (
           <div className="target-container">
             {actualRoom &&
@@ -101,7 +114,7 @@ export const SpellSelection = (props: SpellSelectionProps) => {
               })}
           </div>
         )
-      )}
+      )} */}
     </div>
   );
 };

@@ -11,6 +11,8 @@ const socketIo = require("socket.io", {
 });
 
 const Character = require("./classes/character");
+const Game = require("./classes/game");
+const spells = require("./constants/spells");
 
 const routes = require("./routes"); // Import your routes
 
@@ -24,7 +26,7 @@ const rooms = [];
 
 routes(app, rooms, database);
 
-const createCharacter = (user) => {
+const createCharacterFromUser = (user) => {
   const character = new Character(
     user.id,
     user.firstname,
@@ -32,11 +34,26 @@ const createCharacter = (user) => {
     user.character.maxHealth,
     user.character.maxMana,
     user.character.attack,
-    [],
+    [new spells[0]()],
     user.nickname
   );
 
   return character;
+};
+
+const createCharacter = (character) => {
+  const newCharacter = new Character(
+    character.id,
+    character.firstname,
+    character.lastname,
+    character.maxHealth,
+    character.maxMana,
+    character.attack,
+    [new spells[0]()],
+    character.nickname
+  );
+
+  return newCharacter;
 };
 
 // Socket connection
@@ -45,6 +62,7 @@ io.on("connection", (socket) => {
     io.emit("roomsUpdated", rooms);
   });
 
+  // Create room
   socket.on("createRoom", (name) => {
     const room = {
       id: rooms.length + 1,
@@ -67,7 +85,7 @@ io.on("connection", (socket) => {
     rooms.map((room) => {
       if (room.id === roomToJoin.id && room.users.length < 2) {
         socket.join(roomToJoin.id);
-        const character = createCharacter(actualUser);
+        const character = createCharacterFromUser(actualUser);
 
         room.users.push(actualUser);
         room.characters.push(character);
@@ -77,20 +95,55 @@ io.on("connection", (socket) => {
       }
     });
 
+    if (actualRoom.users.length === 2) {
+      actualRoom.users.map((user) => {
+        user.isReadyToPlay = false;
+      });
+    }
+
     io.to(roomToJoin.id).emit("roomJoined", actualRoom);
   });
 
-  socket.on("startGame", (actualRoom, game) => {
+  // Start game
+  socket.on("startGame", (characters, actualRoom) => {
+    const newCharacters = characters.map((character) => {
+      return createCharacter(character);
+    });
+
+    const game = new Game(newCharacters);
+
+    game.startGame();
     actualRoom.game = game;
-    io.to(actualRoom.id).emit("gameStarted", actualRoom);
+
+    const actualRoomIndex = rooms.findIndex(
+      (room) => room.id === actualRoom.id
+    );
+
+    rooms[actualRoomIndex] = actualRoom;
+
+    io.to(actualRoom.id).emit("gameStarted", game, actualRoom);
   });
 
-  socket.on("updateGame", (actualRoom, game) => {
-    actualRoom.game = game;
+  // Update game
+  socket.on("castSpell", (actualRoom, character, target, castedSpell) => {
+    const updatedRoom = rooms.find((room) => room.id === actualRoom.id);
+    const thisSpell = spells.find((spell) => spell.id === castedSpell.id);
+    const targetCharacter = updatedRoom.game.characters.find(
+      (character) => character.id === target.id
+    );
 
-    io.to(actualRoom.id).emit("gameUpdated", actualRoom);
+    updatedRoom.game.characters.map((actualCharacter) => {
+      if (actualCharacter.id === character.id) {
+        actualCharacter.castSpell(new thisSpell(), targetCharacter);
+      }
+    });
+
+    const updatedGame = updatedRoom.game;
+
+    io.to(actualRoom.id).emit("gameUpdated", updatedGame, updatedRoom);
   });
 
+  // Set ready
   socket.on("setReady", (actualRoom, actualUser) => {
     let newActualUser;
 
@@ -98,6 +151,12 @@ io.on("connection", (socket) => {
       if (user.id === actualUser.id) {
         user.isReadyToPlay = !user.isReadyToPlay;
         newActualUser = user;
+      }
+    });
+
+    rooms.map((room) => {
+      if (room.id === actualRoom.id) {
+        room = actualRoom;
       }
     });
 
@@ -151,6 +210,11 @@ io.on("connection", (socket) => {
     database.query(sql);
 
     io.to(actualRoom.id).emit("gameEnded", results);
+  });
+
+  // Disconnect
+  socket.on("disconnect", () => {
+    socket.disconnect();
   });
 });
 

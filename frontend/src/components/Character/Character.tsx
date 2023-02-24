@@ -31,6 +31,10 @@ const CharacterComponent = (props: CharacterProps) => {
     }
   }, [isAttacking]);
 
+  useEffect(() => {
+    console.log("character", character);
+  }, [character]);
+
   return (
     <div className="character-container">
       <div className="character">

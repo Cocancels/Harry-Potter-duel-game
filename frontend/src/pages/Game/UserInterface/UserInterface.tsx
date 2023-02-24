@@ -1,58 +1,39 @@
-import { Character } from "../../../interfaces/Character";
 import { Room } from "../../../interfaces/Room";
 import { User } from "../../../interfaces/User";
 import { SpellSelection } from "./SpellSelection/SpellSelection";
-import { RoomInfos } from "../Rooms/RoomInfos/RoomInfos";
 import "./UserInterface.css";
 import { WaitingRoom } from "../Rooms/WaitingRoom/WaitingRoom";
+import { Game } from "../../../interfaces/Game";
 
 interface UserInterfaceProps {
-  characters: Character[];
-  rooms: Room[];
-  currentPlayer: Character | undefined;
   actualUser: User | undefined;
-  actualRoom: Room | undefined;
-  isGameStarted: boolean;
-  chooseTarget: boolean;
+  actualRoom: Room;
+  game: Game | undefined;
   socket: any;
-  onCreateRoomClick: () => void;
-  onRoomClick: (roomId: number) => void;
-  handleChoseSpell: (spellId: number) => void;
-  handleTargetSelection: (character: Character) => void;
   handleSetReady: () => void;
   handleStartGame: () => void;
-  setActualRoom: (room: Room) => void;
 }
 
 export const UserInterface = (props: UserInterfaceProps) => {
   const {
-    characters,
-    currentPlayer,
     actualUser,
     actualRoom,
-    isGameStarted,
-    chooseTarget,
+    game,
     socket,
-    handleChoseSpell,
-    handleTargetSelection,
     handleSetReady,
     handleStartGame,
-    setActualRoom,
   } = props;
 
   return (
     <div className="user-interface">
-      {isGameStarted ? (
+      {game && game.isStarted ? (
         <SpellSelection
-          characters={characters}
-          currentPlayer={currentPlayer}
+          characters={game.characters}
+          currentPlayer={game.currentPlayer}
           actualUser={actualUser}
           actualRoom={actualRoom}
-          isGameStarted={isGameStarted}
-          isChoosingTarget={chooseTarget}
-          chooseTarget={chooseTarget}
-          handleTargetSelection={handleTargetSelection}
-          handleChoseSpell={handleChoseSpell}
+          isGameStarted={game.isStarted}
+          socket={socket}
         />
       ) : (
         <WaitingRoom
@@ -63,12 +44,12 @@ export const UserInterface = (props: UserInterfaceProps) => {
         />
       )}
 
-      <RoomInfos
+      {/* <RoomInfos
         room={actualRoom}
         actualUser={actualUser}
         socket={socket}
         setActualRoom={setActualRoom}
-      />
+      /> */}
     </div>
   );
 };

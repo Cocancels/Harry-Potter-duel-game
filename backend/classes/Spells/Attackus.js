@@ -1,4 +1,4 @@
-import Spell from "../spell";
+const Spell = require("../Spell");
 
 class Attackus extends Spell {
   constructor() {
@@ -17,4 +17,4 @@ class Attackus extends Spell {
   }
 }
 
-export default Attackus;
+module.exports = Attackus;

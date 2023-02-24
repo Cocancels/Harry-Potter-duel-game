@@ -8,6 +8,8 @@ import CharacterComponent from "../../components/Character/Character";
 import { isOdd } from "../../utils/numberOddEven";
 import { Character } from "../../interfaces/Character";
 import Button from "../../components/Button/Button";
+import { UserInterface } from "./UserInterface/UserInterface";
+import { Game } from "../../interfaces/Game";
 
 const socket = io("http://localhost:3001", {
   transports: ["websocket", "polling", "flashsocket"],
@@ -18,11 +20,18 @@ export const GamePage = () => {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [actualUser, setActualUser] = useState<User>();
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [game, setGame] = useState<Game>();
 
   useEffect(() => {
     getActualUser();
     fetchRooms();
+  }, []);
 
+  useEffect(() => {
+    handleSocket();
+  }, [actualUser, game, rooms, actualRoom]);
+
+  const handleSocket = () => {
     socket.on("roomCreated", (rooms: Room[]) => {
       setRooms(rooms);
     });
@@ -42,10 +51,29 @@ export const GamePage = () => {
     });
 
     socket.on("roomLeft", (room: Room) => {
-      console.log("roomLeft", room);
       setActualRoom(room);
+      actualUser && setActualUser({ ...actualUser, isReadyToPlay: false });
     });
-  }, []);
+
+    socket.on("readySet", (room: Room, user: User) => {
+      setActualRoom(room);
+
+      if (actualUser?.id === user.id) {
+        setActualUser(user);
+      }
+    });
+
+    socket.on("gameStarted", (game: Game, actualRoom: Room) => {
+      setGame(game);
+      setActualRoom(actualRoom);
+    });
+
+    socket.on("gameUpdated", (game: Game, actualRoom: Room) => {
+      setGame(game);
+      setCharacters(game.characters);
+      setActualRoom({ ...actualRoom, characters: game.characters });
+    });
+  };
 
   const fetchRooms = () => {
     fetch("http://localhost:3001/rooms")
@@ -60,6 +88,8 @@ export const GamePage = () => {
     if (user) {
       setActualUser(JSON.parse(user));
     }
+
+    return user;
   };
 
   const createRoom = (name: string) => {
@@ -75,6 +105,16 @@ export const GamePage = () => {
     socket.emit("leaveRoom", actualRoom, actualUser);
     socket.emit("updateRooms");
     setActualRoom(undefined);
+  };
+
+  const setReady = () => {
+    socket.emit("setReady", actualRoom, actualUser);
+    socket.emit("updateRooms");
+  };
+
+  const startGame = () => {
+    socket.emit("startGame", characters, actualRoom);
+    socket.emit("updateRooms");
   };
 
   useEffect(() => {
@@ -138,26 +178,16 @@ export const GamePage = () => {
           ))}
       </div>
 
-      {/*
       {actualRoom && (
         <UserInterface
-          characters={characters}
-          rooms={rooms}
-          currentPlayer={currentPlayer}
           actualUser={actualUser}
           actualRoom={actualRoom}
-          isGameStarted={isGameStarted}
-          chooseTarget={chooseTarget}
-          handleChoseSpell={handleChoseSpell}
-          handleTargetSelection={handleTargetSelection}
-          onCreateRoomClick={createRoom}
-          onRoomClick={joinRoom}
-          handleSetReady={handleSetReady}
-          handleStartGame={handleStartGame}
+          game={game}
+          handleSetReady={setReady}
+          handleStartGame={startGame}
           socket={socket}
-          setActualRoom={setActualRoom}
         />
-      )} */}
+      )}
     </div>
   );
 };
