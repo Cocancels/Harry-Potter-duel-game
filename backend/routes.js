@@ -46,8 +46,6 @@ module.exports = function (app, rooms, database) {
     const nickname = req.body.nickName;
     const password = req.body.password;
 
-    console.log(nickname, password);
-
     const sql = `SELECT * FROM users WHERE nickname = '${nickname}'`;
 
     let match = false;

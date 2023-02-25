@@ -45,16 +45,28 @@ class Character {
       if (this.isProtected === 0) {
         this.status = this.status.filter((status) => status !== "protected");
       }
-      console.log(
-        `${this.firstname} ${this.lastname} is protected, no damage taken !`
+
+      return this.sendMessage(
+        `${this.firstname} ${this.lastname} is protected and takes no damage`
       );
-      return;
     }
     this.health -= damage;
+
+    return this.sendMessage(
+      `${this.firstname} ${this.lastname} takes ${damage} damage`
+    );
   }
 
   heal(heal) {
+    if (this.health + heal > this.maxHealth) {
+      heal = this.maxHealth - this.health;
+    }
+
     this.health += heal;
+
+    return this.sendMessage(
+      `${this.firstname} ${this.lastname} heals ${heal} health`
+    );
   }
 
   setProtected(turn) {
@@ -62,6 +74,10 @@ class Character {
       this.status.push("protected");
     }
     this.isProtected = turn;
+
+    return this.sendMessage(
+      `${this.firstname} ${this.lastname} is protected for ${turn} turns`
+    );
   }
 
   setStunned(turn) {
@@ -69,6 +85,10 @@ class Character {
       this.status.push("stunned");
     }
     this.isStunned = turn;
+
+    return this.sendMessage(
+      `${this.firstname} ${this.lastname} is stunned for ${turn} turns`
+    );
   }
 
   getSpellFromId(id) {
@@ -76,17 +96,37 @@ class Character {
   }
 
   castSpell(spell, character) {
+    let messages = [];
+
     if (this.isStunned > 0) {
       return;
     }
 
     if (spell.getManaCost() > this.mana) {
-      console.log("Not enough mana");
-      return;
+      messages.push(
+        this.sendMessage(
+          `${this.firstname} ${this.lastname} does not have enough mana to cast ${spell.name}`
+        )
+      );
+
+      return messages;
     }
 
     this.mana -= spell.getManaCost();
-    spell.cast(character);
+
+    const castMessage =
+      this.id === character.id
+        ? `${this.firstname} ${this.lastname} casts ${spell.name} on himself`
+        : `${this.firstname} ${this.lastname} casts ${spell.name} on ${character.firstname} ${character.lastname}`;
+
+    messages.push(castMessage);
+    messages.push(spell.cast(character));
+
+    return messages;
+  }
+
+  sendMessage(message) {
+    return message;
   }
 }
 

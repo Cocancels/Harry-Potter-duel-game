@@ -6,7 +6,7 @@ class Reparo extends Spell {
   }
 
   cast(character) {
-    character.heal(this.power);
+    return this.sendMessage(character.heal(this.power));
   }
 }
 

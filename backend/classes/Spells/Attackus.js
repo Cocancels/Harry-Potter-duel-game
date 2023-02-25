@@ -13,7 +13,19 @@ class Attackus extends Spell {
   }
 
   cast(character) {
-    character.takeDamage(this.power);
+    if (character.isProtected > 0) {
+      character.isProtected--;
+      if (character.isProtected === 0) {
+        character.status = character.status.filter(
+          (status) => status !== "protected"
+        );
+      }
+      return this.sendMessage(
+        `${character.firstname} ${character.lastname} is protected and takes no damage`
+      );
+    }
+
+    return this.sendMessage(character.takeDamage(this.power));
   }
 }
 

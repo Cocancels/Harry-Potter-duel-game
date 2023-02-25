@@ -11,6 +11,10 @@ class Spell {
   getManaCost() {
     return this.cost;
   }
+
+  sendMessage(message) {
+    return message;
+  }
 }
 
 module.exports = Spell;

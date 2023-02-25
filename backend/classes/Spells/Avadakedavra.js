@@ -13,7 +13,7 @@ class Avadakedavra extends Spell {
   }
 
   cast(character) {
-    character.takeDamage(this.power);
+    return this.sendMessage(character.takeDamage(this.power));
   }
 }
 

@@ -56,8 +56,19 @@ const createCharacter = (character) => {
   return newCharacter;
 };
 
+const createLog = (room, message) => {
+  const newLog = {
+    id: room.logs.length + 1,
+    message: message,
+    createdAt: new Date(),
+  };
+
+  return newLog;
+};
+
 // Socket connection
 io.on("connection", (socket) => {
+  // Update rooms
   socket.on("updateRooms", () => {
     io.emit("roomsUpdated", rooms);
   });
@@ -71,6 +82,7 @@ io.on("connection", (socket) => {
       name: name,
       game: null,
       messages: [],
+      logs: [],
     };
 
     rooms.push(room);
@@ -101,6 +113,9 @@ io.on("connection", (socket) => {
       });
     }
 
+    const log = createLog(actualRoom, `${actualUser.nickname} joined the room`);
+    actualRoom.logs.push(log);
+
     io.to(roomToJoin.id).emit("roomJoined", actualRoom);
   });
 
@@ -110,7 +125,7 @@ io.on("connection", (socket) => {
       return createCharacter(character);
     });
 
-    const game = new Game(newCharacters);
+    const game = new Game(newCharacters, actualRoom.id);
 
     game.startGame();
     actualRoom.game = game;
@@ -120,6 +135,8 @@ io.on("connection", (socket) => {
     );
 
     rooms[actualRoomIndex] = actualRoom;
+
+    actualRoom.logs = game.logs;
 
     io.to(actualRoom.id).emit("gameStarted", game, actualRoom);
   });
@@ -174,6 +191,7 @@ io.on("connection", (socket) => {
     const updatedGame = updatedRoom.game;
 
     updatedRoom.characters = updatedGame.characters;
+    updatedRoom.logs = updatedGame.logs;
 
     io.to(actualRoom.id).emit("gameUpdated", updatedGame, updatedRoom);
   });
@@ -194,6 +212,13 @@ io.on("connection", (socket) => {
         room = actualRoom;
       }
     });
+
+    const log = createLog(
+      actualRoom,
+      `${actualUser.nickname} is ready to play`
+    );
+
+    actualRoom.logs.push(log);
 
     io.to(actualRoom.id).emit("readySet", actualRoom, newActualUser);
   });
@@ -256,3 +281,5 @@ io.on("connection", (socket) => {
 server.listen(3001, () => {
   console.log("Server listening on port 3001");
 });
+
+module.exports = io;

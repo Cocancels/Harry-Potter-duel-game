@@ -6,7 +6,7 @@ class PetrificusTotalus extends Spell {
   }
 
   cast(character) {
-    character.setStunned(this.power);
+    return this.sendMessage(character.setStunned(this.power));
   }
 }
 
