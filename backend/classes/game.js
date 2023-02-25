@@ -7,6 +7,7 @@ class Game {
 
   endTurn() {
     this.currentTurn = this.currentTurn + 1;
+    console.log(`Turn ${this.currentTurn} ended`);
   }
 
   endGame() {
@@ -60,8 +61,11 @@ class Game {
   handleUserTurn(character, action) {
     if (character.isAlive()) {
       this.handleProtected(character);
-      action;
-      this.handleStun(character);
+      if (character.isStunned > 0) {
+        this.handleStun(character);
+        return;
+      }
+      action();
     }
   }
 

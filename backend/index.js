@@ -129,7 +129,7 @@ io.on("connection", (socket) => {
     const updatedRoom = rooms.find((room) => room.id === actualRoom.id);
     const thisSpell = spells.find((spell) => spell.id === castedSpell);
     const casterCharacter = updatedRoom.game.characters.find(
-      (character) => character.id === character.id
+      (c) => c.id === character.id
     );
     const targetCharacter = updatedRoom.game.characters.find(
       (character) => character.id === target.id
@@ -163,7 +163,7 @@ io.on("connection", (socket) => {
       for (const socketId of room) {
         const socket = io.sockets.sockets.get(socketId);
 
-        game.handleUserTurn(socket.character, socket.action());
+        game.handleUserTurn(socket.character, socket.action);
         socket.action = null;
       }
       game.endTurn();
