@@ -31,7 +31,7 @@ const NavBar = () => {
             <li>
               <Link to="/game">
                 <img src="https://i.ibb.co/J5k9TGc/potter-hat.png" alt="" />
-                HarryTour
+                Wizard Duel
               </Link>
             </li>
             <li>

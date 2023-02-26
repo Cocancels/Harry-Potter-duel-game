@@ -183,7 +183,7 @@ io.on("connection", (socket) => {
         game.handleUserTurn(socket.character, socket.action);
         socket.action = null;
       }
-      game.endTurn();
+      if (!game.isGameOver()) game.endTurn();
     } else {
       return;
     }

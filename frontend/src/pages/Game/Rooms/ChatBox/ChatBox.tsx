@@ -1,23 +1,24 @@
 import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Message } from "../../../../interfaces/Message";
-import { Room } from "../../../../interfaces/Room";
-import { User } from "../../../../interfaces/User";
+import { setRoom } from "../../../../store/ActualRoom/room";
 import "./ChatBox.css";
 import { MessageItem } from "./Message/Message";
 
 interface ChatBoxProps {
-  actualRoom: Room | undefined;
-  actualUser: User | undefined;
-  setActualRoom: (room: Room) => void;
   socket: any;
 }
 
 export const ChatBox = (props: ChatBoxProps) => {
-  const { actualRoom, actualUser, setActualRoom, socket } = props;
+  const actualUser = useSelector((state: any) => state.User);
+  const actualRoom = useSelector((state: any) => state.ActualRoom);
+
+  const dispatch = useDispatch();
+
+  const { socket } = props;
 
   const [message, setMessage] = useState<string>("");
   const [messages, setMessages] = useState<any[]>([]);
-  const [room, setRoom] = useState<Room | undefined>(actualRoom);
 
   const handleSendMessage = () => {
     const newMessage: Message = {
@@ -33,7 +34,7 @@ export const ChatBox = (props: ChatBoxProps) => {
   useEffect(() => {
     socket.on("messageSent", (messages: Message[]) => {
       setMessages(messages);
-      room && setRoom({ ...room, messages });
+      actualRoom && dispatch(setRoom({ ...actualRoom, messages: messages }));
     });
   }, []);
 

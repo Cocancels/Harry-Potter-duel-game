@@ -10,26 +10,38 @@ import { Character } from "../../interfaces/Character";
 import Button from "../../components/Button/Button";
 import { UserInterface } from "./UserInterface/UserInterface";
 import { Game } from "../../interfaces/Game";
+import { useDispatch, useSelector } from "react-redux/es/exports";
+import { updateUser } from "../../store/User/userSlice";
+import { setRoom } from "../../store/ActualRoom/room";
 
 const socket = io("http://localhost:3001", {
   transports: ["websocket", "polling", "flashsocket"],
 });
 
+interface Results {
+  winner: Character;
+  loser: Character;
+}
+
 export const GamePage = () => {
-  const [actualRoom, setActualRoom] = useState<Room>();
+  const actualUser = useSelector((state: any) => state.User);
+  const actualRoom = useSelector((state: any) => state.ActualRoom);
+
+  const dispatch = useDispatch();
+
   const [rooms, setRooms] = useState<Room[]>([]);
-  const [actualUser, setActualUser] = useState<User>();
   const [characters, setCharacters] = useState<Character[]>([]);
+  const [hasChosenSpell, setHasChosenSpell] = useState<boolean>(false);
+  const [results, setResults] = useState<Results>();
   const [game, setGame] = useState<Game>();
 
   useEffect(() => {
-    getActualUser();
     fetchRooms();
   }, []);
 
   useEffect(() => {
     handleSocket();
-  }, [actualUser, game, rooms, actualRoom]);
+  }, [actualUser, game, rooms, actualRoom, characters]);
 
   const handleSocket = () => {
     socket.on("roomCreated", (rooms: Room[]) => {
@@ -42,8 +54,7 @@ export const GamePage = () => {
         r.id === actualRoom.id ? actualRoom : r
       );
       setRooms(actualRooms);
-      setActualRoom(actualRoom);
-      setCharacters(actualRoom.characters);
+      dispatch(setRoom(actualRoom));
     });
 
     socket.on("roomsUpdated", (rooms: Room[]) => {
@@ -51,27 +62,28 @@ export const GamePage = () => {
     });
 
     socket.on("roomLeft", (room: Room) => {
-      setActualRoom(room);
-      actualUser && setActualUser({ ...actualUser, isReadyToPlay: false });
+      dispatch(setRoom(room));
+      actualUser &&
+        dispatch(updateUser({ ...actualUser, isReadyToPlay: false }));
     });
 
     socket.on("readySet", (room: Room, user: User) => {
-      setActualRoom(room);
+      dispatch(setRoom(room));
 
       if (actualUser?.id === user.id) {
-        setActualUser(user);
+        dispatch(updateUser(user));
       }
     });
 
     socket.on("gameStarted", (game: Game, actualRoom: Room) => {
       setGame(game);
-      setActualRoom(actualRoom);
+      dispatch(setRoom(actualRoom));
     });
 
     socket.on("gameUpdated", (game: Game, actualRoom: Room) => {
+      setHasChosenSpell(false);
       setGame(game);
-      setCharacters(game.characters);
-      setActualRoom({ ...actualRoom, characters: game.characters });
+      dispatch(setRoom({ ...actualRoom, characters: game.characters }));
     });
   };
 
@@ -81,15 +93,6 @@ export const GamePage = () => {
       .then((data) => {
         setRooms(data.rooms);
       });
-  };
-
-  const getActualUser = () => {
-    const user = localStorage.getItem("actualUser");
-    if (user) {
-      setActualUser(JSON.parse(user));
-    }
-
-    return user;
   };
 
   const createRoom = (name: string) => {
@@ -104,7 +107,7 @@ export const GamePage = () => {
   const leaveRoom = () => {
     socket.emit("leaveRoom", actualRoom, actualUser);
     socket.emit("updateRooms");
-    setActualRoom(undefined);
+    dispatch(setRoom(undefined));
   };
 
   const setReady = () => {
@@ -117,11 +120,26 @@ export const GamePage = () => {
     socket.emit("updateRooms");
   };
 
+  const organizeCharacters = (characters: Character[]) => {
+    const updatedCharacters = characters.filter((c) => c.id !== actualUser?.id);
+    updatedCharacters.unshift(characters.find((c) => c.id === actualUser?.id)!);
+
+    return updatedCharacters;
+  };
+
   useEffect(() => {
     if (actualRoom) {
-      setCharacters(actualRoom.characters);
+      const updatedCharacters = organizeCharacters(actualRoom.characters);
+
+      setCharacters(updatedCharacters);
     }
   }, [actualRoom]);
+
+  useEffect(() => {
+    if (game?.isFinished) {
+      setResults(game.results);
+    }
+  }, [game]);
 
   return (
     <div className="game-container">
@@ -141,30 +159,30 @@ export const GamePage = () => {
         </div>
       )}
 
-      {/* {results?.winner && (
+      {results?.winner && (
         <div className="results-modal">
           <div className="results-modal-content">
             <h1>Results: </h1>
             <p>
-              Gagnant: <span>{results?.winner.firstName}</span>
+              Gagnant: <span>{results?.winner.firstname}</span>
             </p>
             <p>
-              Perdant: <span>{results?.loser.firstName}</span>
+              Perdant: <span>{results?.loser.firstname}</span>
             </p>
             <p>
-              Nombre de tours: <span>{turn}</span>
+              Nombre de tours: <span>{game?.currentTurn}</span>
             </p>
             <Button
               className="cancel-button"
               label="Close"
               onClick={() => {
                 setResults(undefined);
-                handleLeaveRoom();
+                // handleLeaveRoom();
               }}
             />
           </div>
         </div>
-      )} */}
+      )}
 
       <div className="game-characters-container">
         {actualRoom &&
@@ -180,12 +198,13 @@ export const GamePage = () => {
 
       {actualRoom && (
         <UserInterface
-          actualUser={actualUser}
-          actualRoom={actualRoom}
+          characters={characters}
           game={game}
           handleSetReady={setReady}
           handleStartGame={startGame}
           socket={socket}
+          hasChosenSpell={hasChosenSpell}
+          setHasChosenSpell={setHasChosenSpell}
         />
       )}
     </div>

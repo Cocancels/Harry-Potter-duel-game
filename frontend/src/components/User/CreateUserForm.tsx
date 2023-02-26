@@ -41,7 +41,7 @@ const CreateUserForm = () => {
           setDisplayLoginContainer(true);
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage(
           "Cet utilisateur existe déjà, veuillez vous connecter."
         );
@@ -74,11 +74,7 @@ const CreateUserForm = () => {
         body: JSON.stringify(user),
       };
       setErrorMessage("");
-      fetch("http://localhost:3001/register", requestOptions).then(
-        async (response) => {
-          const data = await response.json();
-        }
-      );
+      fetch("http://localhost:3001/register", requestOptions);
     }
   };
   const getHousesChoices = () => {

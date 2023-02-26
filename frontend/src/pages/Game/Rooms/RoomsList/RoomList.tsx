@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "../../../../components/Button/Button";
 import { Room } from "../../../../interfaces/Room";
-import { User } from "../../../../interfaces/User";
 import "./RoomList.css";
 interface RoomListProps {
   rooms: Room[];

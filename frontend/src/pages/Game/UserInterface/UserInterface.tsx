@@ -1,55 +1,52 @@
-import { Room } from "../../../interfaces/Room";
-import { User } from "../../../interfaces/User";
 import { SpellSelection } from "./SpellSelection/SpellSelection";
 import "./UserInterface.css";
 import { WaitingRoom } from "../Rooms/WaitingRoom/WaitingRoom";
 import { Game } from "../../../interfaces/Game";
+import { Character } from "../../../interfaces/Character";
+import { RoomInfos } from "../Rooms/RoomInfos/RoomInfos";
+import { Logs } from "../Rooms/Logs/Logs";
 
 interface UserInterfaceProps {
-  actualUser: User | undefined;
-  actualRoom: Room;
+  characters: Character[];
   game: Game | undefined;
   socket: any;
+  hasChosenSpell: boolean;
+  setHasChosenSpell: (hasChosenSpell: boolean) => void;
   handleSetReady: () => void;
   handleStartGame: () => void;
 }
 
 export const UserInterface = (props: UserInterfaceProps) => {
   const {
-    actualUser,
-    actualRoom,
+    characters,
     game,
     socket,
+    hasChosenSpell,
     handleSetReady,
     handleStartGame,
+    setHasChosenSpell,
   } = props;
 
   return (
     <div className="user-interface">
       {game && game.isStarted ? (
         <SpellSelection
-          characters={game.characters}
-          currentPlayer={game.currentPlayer}
-          actualUser={actualUser}
-          actualRoom={actualRoom}
+          characters={characters}
           isGameStarted={game.isStarted}
           socket={socket}
+          hasChosenSpell={hasChosenSpell}
+          setHasChosenSpell={setHasChosenSpell}
         />
       ) : (
         <WaitingRoom
-          room={actualRoom}
-          actualUser={actualUser}
           handleSetReady={handleSetReady}
           handleStartGame={handleStartGame}
         />
       )}
 
-      {/* <RoomInfos
-        room={actualRoom}
-        actualUser={actualUser}
-        socket={socket}
-        setActualRoom={setActualRoom}
-      /> */}
+      <Logs />
+
+      <RoomInfos socket={socket} />
     </div>
   );
 };

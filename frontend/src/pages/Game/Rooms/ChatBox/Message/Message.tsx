@@ -13,11 +13,13 @@ export const MessageItem = (props: MessageProps) => {
     const newDate = new Date(date);
 
     const day = newDate.getDate();
-    const month = newDate.getMonth() + 1;
+    let month: string | number = newDate.getMonth() + 1;
+    month = month < 10 ? `0${month}` : month;
     const year = newDate.getFullYear();
-    const hours = newDate.getHours();
-    const minutes = newDate.getMinutes();
-    const seconds = newDate.getSeconds();
+    let hours: string | number = newDate.getHours();
+    hours = hours < 10 ? `0${hours}` : hours;
+    let minutes: string | number = newDate.getMinutes();
+    let seconds: string | number = newDate.getSeconds();
 
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
   };

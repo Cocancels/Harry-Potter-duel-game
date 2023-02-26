@@ -3,6 +3,8 @@ class Game {
     this.characters = characters;
     this.currentTurn = 0;
     this.isStarted = false;
+    this.isFinished = false;
+    this.results = null;
     this.logs = [];
   }
 
@@ -20,10 +22,17 @@ class Game {
   }
 
   endGame() {
-    return {
+    this.isFinished = true;
+    this.results = {
       winner: this.getWinner(),
       loser: this.getLoser(),
     };
+
+    this.sendMessage(`
+      Game finished
+      Winner: ${this.results.winner.firstname} ${this.results.winner.lastname}
+      Loser: ${this.results.loser.firstname} ${this.results.loser.lastname}
+    `);
   }
 
   isGameOver() {
@@ -83,7 +92,13 @@ class Game {
       }
 
       const messages = action();
+
       messages.forEach((message) => this.sendMessage(message));
+
+      // check if game is over
+      if (this.isGameOver()) {
+        this.endGame();
+      }
     }
   }
 
@@ -92,6 +107,7 @@ class Game {
   }
 
   startGame() {
+    this.currentTurn = 1;
     this.isStarted = true;
     this.sendMessage("Game started");
   }

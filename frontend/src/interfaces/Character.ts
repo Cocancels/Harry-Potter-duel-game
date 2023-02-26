@@ -9,6 +9,8 @@ export interface Character {
   health: number;
   mana: number;
   attack: number;
+  defense: number;
+  speed: number;
   spells: Spell[];
   status: string[];
   isProtected: number;

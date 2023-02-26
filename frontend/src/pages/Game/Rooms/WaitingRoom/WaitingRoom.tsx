@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import Button from "../../../../components/Button/Button";
-import { Room } from "../../../../interfaces/Room";
 import { User } from "../../../../interfaces/User";
 import "./WaitingRoom.css";
 
 interface WaitingRoomProps {
-  room: Room | undefined;
-  actualUser: User | undefined;
   handleSetReady: () => void;
   handleStartGame: () => void;
 }
 
 export const WaitingRoom = (props: WaitingRoomProps) => {
-  const { room, actualUser, handleSetReady, handleStartGame } = props;
+  const actualRoom = useSelector((state: any) => state.ActualRoom);
+  const actualUser = useSelector((state: any) => state.User);
+
+  const { handleSetReady, handleStartGame } = props;
   const [hasEnoughPlayers, setHasEnoughPlayers] = useState<boolean>(false);
   const [usersInRoom, setUsersInRoom] = useState<number>(0);
   const [usersReady, setUsersReady] = useState<number>(0);
@@ -20,16 +21,16 @@ export const WaitingRoom = (props: WaitingRoomProps) => {
   const [showModal, setShowModal] = useState(true);
 
   useEffect(() => {
-    if (room?.users.length === 2) {
+    if (actualRoom?.users.length === 2) {
       setHasEnoughPlayers(true);
     } else {
       setHasEnoughPlayers(false);
     }
 
-    room && setUsersInRoom(room?.users.length);
+    actualRoom && setUsersInRoom(actualRoom?.users.length);
 
     getUsersReady();
-  }, [room]);
+  }, [actualRoom]);
 
   useEffect(() => {
     if (countdown > 0 && countdown !== -1) {
@@ -48,7 +49,7 @@ export const WaitingRoom = (props: WaitingRoomProps) => {
 
   const getUsersReady = () => {
     let usersReady = 0;
-    room?.users.forEach((user) => {
+    actualRoom?.users.forEach((user: User) => {
       if (user.isReadyToPlay) {
         usersReady++;
       }

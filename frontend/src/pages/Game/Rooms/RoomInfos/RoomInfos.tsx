@@ -1,20 +1,20 @@
 import { useState } from "react";
-import { Room } from "../../../../interfaces/Room";
 import { User } from "../../../../interfaces/User";
 import { HiOutlineInformationCircle } from "react-icons/hi";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import "./RoomInfos.css";
 import { ChatBox } from "../ChatBox/ChatBox";
+import { useSelector } from "react-redux";
 
 interface RoomInfosProps {
-  room: Room | undefined;
-  actualUser: User | undefined;
   socket: any;
-  setActualRoom: (room: Room) => void;
 }
 
 export const RoomInfos = (props: RoomInfosProps) => {
-  const { room, actualUser, socket, setActualRoom } = props;
+  const actualRoom = useSelector((state: any) => state.ActualRoom);
+  const actualUser = useSelector((state: any) => state.User);
+
+  const { socket } = props;
 
   const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -34,7 +34,7 @@ export const RoomInfos = (props: RoomInfosProps) => {
               <h2>Room Infos</h2>
             </div>
             <ul>
-              {room?.users.map((user) => (
+              {actualRoom?.users.map((user: User) => (
                 <li key={user.id}>
                   {user.nickname}
                   {user.id === actualUser?.id && " (You)"}
@@ -51,16 +51,11 @@ export const RoomInfos = (props: RoomInfosProps) => {
             onClick={() => setOpenModal(true)}
             size={30}
           />
-          <div className="room-infos-roomId">Room ID: {room?.id}</div>
+          <div className="room-infos-roomId">Room ID: {actualRoom?.id}</div>
           <div></div>
         </div>
 
-        <ChatBox
-          actualUser={actualUser}
-          socket={socket}
-          actualRoom={room}
-          setActualRoom={setActualRoom}
-        />
+        <ChatBox socket={socket} />
       </div>
     </>
   );
